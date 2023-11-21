@@ -57,6 +57,26 @@ def test_container_injected(registry: Registry | Callable[[], Registry]) -> None
         assert response.status_code == HTTPStatus.OK
 
 
+def test_container_injected_custom_key() -> None:
+    """Test container is injected when using a custom dependency key."""
+
+    @get("/", sync_to_thread=False)
+    def get_handler(
+        container: Container = Dependency(skip_validation=True),
+    ) -> None:
+        assert container.get(int) == NUMBER
+        assert container.get(str) == STRING
+
+    registry = _registry_factory()
+    config = SvcsPluginConfig(registry, container_dependency_key="container")
+    plugin = SvcsPlugin(config)
+
+    with create_test_client([get_handler], plugins=[plugin]) as client:
+        response = client.get("/")
+
+        assert response.status_code == HTTPStatus.OK
+
+
 @pytest.mark.parametrize(
     "registry",
     (_registry_factory(), _registry_factory, _async_registry_factory),

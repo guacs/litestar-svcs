@@ -30,6 +30,9 @@ class SvcsPluginConfig:
     provided. This can be async or sync.
     """
 
+    container_dependency_key: str = "svcs_container"
+    """The dependency key to use for injecting `svcs.Container`."""
+
     registry_state_key: str = "svcs_registry"
     """The key used to store the Registry within the Litestar `State` instance."""
 

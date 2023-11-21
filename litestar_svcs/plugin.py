@@ -27,7 +27,6 @@ class SvcsPlugin(InitPluginProtocol):
 
     _registry: Registry
     _REGISTRY_DEPENDENCY_NAME: Final[str] = "svcs_registry"
-    _CONTAINER_DEPENDENCY_NAME: Final[str] = "svcs_container"
 
     def __init__(self, config: SvcsPluginConfig) -> None:
         self._config = config
@@ -116,7 +115,7 @@ class SvcsPlugin(InitPluginProtocol):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.dependencies.update(
             {
-                self._CONTAINER_DEPENDENCY_NAME: Provide(self.provide_container),
+                self._config.container_dependency_key: Provide(self.provide_container),
                 self._REGISTRY_DEPENDENCY_NAME: Provide(
                     self.provide_registry,
                     use_cache=True,
