@@ -1,0 +1,46 @@
+[project]
+name = "litestar-svcs"
+version = "0.1.0"
+description = "A plugin for Litestar to integrate `svcs`."
+authors = [
+    {name = "guacs", email = "guacs.guacs@gmail.com"},
+]
+dependencies = [
+]
+requires-python = ">=3.8"
+readme = "README.md"
+license = {text = "MIT"}
+
+[project.optional-dependencies]
+lint = [
+    "mypy>=1.7.0",
+    "ruff>=0.1.6",
+    "black>=23.11.0",
+]
+
+[tool.ruff]
+fix = true
+select = ["ALL"]
+ignore = [
+  "ANN101", # annotate 'self'
+  "ANN102", # annotate 'cls'
+  "D100",   # pydocstyle - missing docstring in public module
+  "D104",   # pydocstyle - missing docstring in public package
+  "D105",   # missing docstring in magic methods
+  "D107",   # allow missing docstring in __init__
+  "D202",   # pydocstyle - no blank lines allowed after function docstring
+  "D203",   # pydocstyle - blank line before class
+  "D213",   # pydocstyle - multiline second line
+  "FIX002", # allow unfixed todos
+  "S101",   # allow asserts
+  "TD003",  # no issue link needed
+  "TRY300", # allow return statements within 'try' blocks
+]
+
+[tool.ruff.isort]
+force-single-line = true
+
+
+[build-system]
+requires = ["pdm-backend"]
+build-backend = "pdm.backend"
