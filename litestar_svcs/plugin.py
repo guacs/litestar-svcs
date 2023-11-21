@@ -4,6 +4,7 @@ from contextlib import asynccontextmanager
 from inspect import isawaitable
 from typing import TYPE_CHECKING
 from typing import AsyncGenerator
+from typing import Final
 
 from litestar.di import Provide
 from litestar.exceptions import ImproperlyConfiguredException
@@ -25,6 +26,8 @@ class SvcsPlugin(InitPluginProtocol):
     """The plugin for integrating `svcs` to a `Litestar` application."""
 
     _registry: Registry
+    _REGISTRY_DEPENDENCY_NAME: Final[str] = "svcs_registry"
+    _CONTAINER_DEPENDENCY_NAME: Final[str] = "svcs_container"
 
     def __init__(self, config: SvcsPluginConfig) -> None:
         self._config = config
@@ -70,16 +73,16 @@ class SvcsPlugin(InitPluginProtocol):
 
     async def provide_container(
         self,
-        registry: Registry = Dependency(skip_validation=True),  # noqa: B008
+        svcs_registry: Registry = Dependency(skip_validation=True),  # noqa: B008
     ) -> AsyncGenerator[Container, None]:
         """Provide the container from the given registry.
 
         Args:
         ----
-            registry: A `svcs.Registry` instance.
+            svcs_registry: A `svcs.Registry` instance.
         """
 
-        async with Container(registry) as container:
+        async with Container(svcs_registry) as container:
             yield container
 
     @asynccontextmanager
@@ -113,8 +116,8 @@ class SvcsPlugin(InitPluginProtocol):
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
         app_config.dependencies.update(
             {
-                self._config.container_dependency_key: self.provide_container,
-                self._config.registry_dependency_key: Provide(
+                self._CONTAINER_DEPENDENCY_NAME: Provide(self.provide_container),
+                self._REGISTRY_DEPENDENCY_NAME: Provide(
                     self.provide_registry,
                     use_cache=True,
                     sync_to_thread=False,

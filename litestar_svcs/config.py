@@ -30,12 +30,6 @@ class SvcsPluginConfig:
     provided. This can be async or sync.
     """
 
-    registry_dependency_key: str = "svcs_registry"
-    """The kwarg name for the `svcs.Registry` to be injected into the dependency callables."""  # noqa: E501
-
-    container_dependency_key: str = "svcs_container"
-    """The kwarg name for the `svcs.Container` to be injected into the dependency callables."""  # noqa: E501
-
     registry_state_key: str = "svcs_registry"
     """The key used to store the Registry within the Litestar `State` instance."""
 
