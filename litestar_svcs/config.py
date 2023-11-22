@@ -11,7 +11,7 @@ if TYPE_CHECKING:
     from svcs import Registry
 
 
-@dataclass(slots=True, frozen=True)
+@dataclass(frozen=True)
 class SvcsPluginConfig:
     """The config for the `SvcsPlugin`."""
 
