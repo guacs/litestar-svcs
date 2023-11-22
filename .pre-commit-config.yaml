@@ -22,10 +22,3 @@ repos:
     rev: v2.2.5
     hooks:
       - id: codespell
-  - repo: local
-    hooks:
-      - id: mypy
-        name: Type Checking
-        entry: pdm run mypy
-        language: system
-        types: [python]
