@@ -84,12 +84,9 @@ class SvcsPlugin(InitPluginProtocol):
         async with Container(svcs_registry) as container:
             yield container
 
-    @asynccontextmanager
-    async def lifespan(self, app: Litestar) -> AsyncGenerator[None, None]:
-        """Add the lifespan to the application.
+    async def on_app_startup(self, app: Litestar) -> None:
+        """Create and add the registry to the app state."""
 
-        This is where the registry is created and injected into the app state.
-        """
         registry: Registry
         if self._config.registry:
             registry = self._config.registry
@@ -106,10 +103,14 @@ class SvcsPlugin(InitPluginProtocol):
             )
         app.state.update({self._config.registry_state_key: registry})
 
-        try:
-            yield
-        finally:
-            await registry.aclose()
+    async def on_app_shutdown(self, app: Litestar) -> None:
+        """Close the registry."""
+
+        registry: Registry | None = app.state.get(self._config.registry_state_key)
+
+        assert registry is not None
+
+        await registry.aclose()
 
     @override
     def on_app_init(self, app_config: AppConfig) -> AppConfig:
@@ -123,7 +124,8 @@ class SvcsPlugin(InitPluginProtocol):
                 ),
             },
         )
-        app_config.lifespan.append(self.lifespan)
+        app_config.on_startup.insert(0, self.on_app_startup)
+        app_config.on_shutdown.append(self.on_app_shutdown)
         app_config.signature_namespace.update(
             {
                 "Container": Container,
